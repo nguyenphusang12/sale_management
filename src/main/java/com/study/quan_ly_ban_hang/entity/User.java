@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -20,11 +21,12 @@ import java.time.Instant;
 @Builder
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID id;
 
     @NotBlank
-    @Column(nullable = false,length = 100)
+    @Column(nullable = false, length = 100)
     private String fullName;
 
 
