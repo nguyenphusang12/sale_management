@@ -1,22 +1,31 @@
 package com.study.quan_ly_ban_hang.service;
 
-import com.study.quan_ly_ban_hang.Repository.UserRepository;
-import com.study.quan_ly_ban_hang.dto.request.CreateUserRequest;
+import com.study.quan_ly_ban_hang.dto.request.UserCreationRequest;
 import com.study.quan_ly_ban_hang.entity.User;
+import com.study.quan_ly_ban_hang.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User createUser(CreateUserRequest req) {
-        var user = User.builder()
-                .fullName(req.getFullName())
-                .email(req.getEmail().toLowerCase().trim())
-                .passwordHash(req.getPassword().trim())
-                .build();
+    public User createUser(UserCreationRequest req) {
+        User user = new User();
+
+        user.setUsername(req.getUsername());
+        user.setPassword(req.getPassword());
+        user.setFirstName(req.getFirstName());
+        user.setLastName(req.getLastName());
+        user.setDob(req.getDob());
+
         return userRepository.save(user);
+    }
+
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 }
