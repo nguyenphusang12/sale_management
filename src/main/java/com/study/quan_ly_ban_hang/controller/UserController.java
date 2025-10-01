@@ -4,6 +4,7 @@ import com.study.quan_ly_ban_hang.dto.request.UserCreationRequest;
 import com.study.quan_ly_ban_hang.dto.request.UserUpdateRequest;
 import com.study.quan_ly_ban_hang.entity.User;
 import com.study.quan_ly_ban_hang.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public User createUser(@RequestBody UserCreationRequest req) {
+    public User createUser(@RequestBody @Valid UserCreationRequest req) {
         return userService.createUser(req);
     }
 
