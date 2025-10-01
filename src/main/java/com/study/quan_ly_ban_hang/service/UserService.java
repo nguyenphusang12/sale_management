@@ -17,6 +17,10 @@ public class UserService {
     public User createUser(UserCreationRequest req) {
         User user = new User();
 
+        if (userRepository.existsByUsername(req.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+
         user.setUsername(req.getUsername());
         user.setPassword(req.getPassword());
         user.setFirstName(req.getFirstName());
