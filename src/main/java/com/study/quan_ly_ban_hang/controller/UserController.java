@@ -1,5 +1,6 @@
 package com.study.quan_ly_ban_hang.controller;
 
+import com.study.quan_ly_ban_hang.dto.request.ApiResponse;
 import com.study.quan_ly_ban_hang.dto.request.UserCreationRequest;
 import com.study.quan_ly_ban_hang.dto.request.UserUpdateRequest;
 import com.study.quan_ly_ban_hang.entity.User;
@@ -17,13 +18,17 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public User createUser(@RequestBody @Valid UserCreationRequest req) {
-        return userService.createUser(req);
+    public ApiResponse createUser(@RequestBody @Valid UserCreationRequest req) {
+        ApiResponse response = new ApiResponse();
+        response.setData(userService.createUser(req));
+        return response;
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public ApiResponse getUsers() {
+        ApiResponse response = new ApiResponse();
+        response.setData(userService.getUsers());
+        return response;
     }
 
     @GetMapping("/{id}")
