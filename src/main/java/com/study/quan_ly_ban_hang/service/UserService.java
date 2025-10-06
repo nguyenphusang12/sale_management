@@ -3,6 +3,8 @@ package com.study.quan_ly_ban_hang.service;
 import com.study.quan_ly_ban_hang.dto.request.UserCreationRequest;
 import com.study.quan_ly_ban_hang.dto.request.UserUpdateRequest;
 import com.study.quan_ly_ban_hang.entity.User;
+import com.study.quan_ly_ban_hang.exception.AppException;
+import com.study.quan_ly_ban_hang.exception.ErrorCode;
 import com.study.quan_ly_ban_hang.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ public class UserService {
         User user = new User();
 
         if (userRepository.existsByUsername(req.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         user.setUsername(req.getUsername());
