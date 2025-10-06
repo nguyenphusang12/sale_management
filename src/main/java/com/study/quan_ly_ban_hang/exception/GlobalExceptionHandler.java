@@ -29,7 +29,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<String> handlingValidateException(MethodArgumentNotValidException e) {
-        return ResponseEntity.badRequest().body(e.getFieldError().getDefaultMessage());
+    ResponseEntity<ApiResponse> handlingValidateException(MethodArgumentNotValidException e) {
+        String numKey = e.getFieldError().getDefaultMessage();
+        ApiResponse apiResponse = new ApiResponse();
+        ErrorCode errorCode = ErrorCode.INVALID_KEY_ERROR;
+
+        try {
+            errorCode = ErrorCode.valueOf(numKey);
+        } catch (Exception ex) {
+        }
+
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+        return ResponseEntity.badRequest().body(apiResponse);
     }
 }
