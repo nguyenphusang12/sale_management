@@ -5,6 +5,7 @@ import com.study.quan_ly_ban_hang.dto.request.UserUpdateRequest;
 import com.study.quan_ly_ban_hang.entity.User;
 import com.study.quan_ly_ban_hang.exception.AppException;
 import com.study.quan_ly_ban_hang.exception.ErrorCode;
+import com.study.quan_ly_ban_hang.mapper.UserMapper;
 import com.study.quan_ly_ban_hang.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,20 +16,15 @@ import java.util.List;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserMapper userMapper;
 
     public User createUser(UserCreationRequest req) {
-        User user = new User();
 
         if (userRepository.existsByUsername(req.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
-
-        user.setUsername(req.getUsername());
-        user.setPassword(req.getPassword());
-        user.setFirstName(req.getFirstName());
-        user.setLastName(req.getLastName());
-        user.setDob(req.getDob());
-
+        User user = userMapper.toUser(req);
         return userRepository.save(user);
     }
 
