@@ -12,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
@@ -36,8 +35,10 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponse getUserById(@PathVariable String id) {
-        return userService.getUserById(id);
+    public ApiResponse getUserById(@PathVariable String id) {
+        ApiResponse response = new ApiResponse();
+        response.setData(userService.getUserById(id));
+        return response;
     }
 
     @PutMapping("/{id}")
