@@ -3,6 +3,7 @@ package com.study.quan_ly_ban_hang.controller;
 import com.study.quan_ly_ban_hang.dto.request.ApiResponse;
 import com.study.quan_ly_ban_hang.dto.request.UserCreationRequest;
 import com.study.quan_ly_ban_hang.dto.request.UserUpdateRequest;
+import com.study.quan_ly_ban_hang.dto.response.UserResponse;
 import com.study.quan_ly_ban_hang.entity.User;
 import com.study.quan_ly_ban_hang.service.UserService;
 import jakarta.validation.Valid;
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable String id) {
+    public UserResponse getUserById(@PathVariable String id) {
         return userService.getUserById(id);
     }
 

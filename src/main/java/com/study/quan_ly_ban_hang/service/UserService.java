@@ -2,6 +2,7 @@ package com.study.quan_ly_ban_hang.service;
 
 import com.study.quan_ly_ban_hang.dto.request.UserCreationRequest;
 import com.study.quan_ly_ban_hang.dto.request.UserUpdateRequest;
+import com.study.quan_ly_ban_hang.dto.response.UserResponse;
 import com.study.quan_ly_ban_hang.entity.User;
 import com.study.quan_ly_ban_hang.exception.AppException;
 import com.study.quan_ly_ban_hang.exception.ErrorCode;
@@ -32,18 +33,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    public UserResponse getUserById(String id) {
+        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
 
     public User updateUser(String id, UserUpdateRequest req) {
-        User user = getUserById(id);
-
-        user.setPassword(req.getPassword());
-        user.setFirstName(req.getFirstName());
-        user.setLastName(req.getLastName());
-        user.setDob(req.getDob());
-
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        userMapper.updateUser(user, req);
         return userRepository.save(user);
     }
 
