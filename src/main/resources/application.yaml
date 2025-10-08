@@ -18,3 +18,5 @@ server:
   port: 9999
   servlet:
     context-path: "/api/v1"
+jwt:
+  signerKey: "3fa2b6e78c14f0a19d45d9f6c73e2a58a7b6c12d4f83a9e0e7c93f5b8c6d10a4"
