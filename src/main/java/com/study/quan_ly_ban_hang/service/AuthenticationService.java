@@ -3,7 +3,6 @@ package com.study.quan_ly_ban_hang.service;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimNames;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.study.quan_ly_ban_hang.dto.request.AuthenticationRequest;
