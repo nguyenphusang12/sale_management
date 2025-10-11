@@ -28,12 +28,12 @@ import java.util.stream.Collectors;
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest req) {
         if (userRepository.existsByUsername(req.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         req.setPassword(passwordEncoder.encode(req.getPassword()));
         User user = userMapper.toUser(req);
         Set<String> roles = new HashSet<>();
