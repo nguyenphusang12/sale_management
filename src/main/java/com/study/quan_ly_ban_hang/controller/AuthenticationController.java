@@ -4,7 +4,6 @@ import com.nimbusds.jose.JOSEException;
 import com.study.quan_ly_ban_hang.dto.request.ApiResponse;
 import com.study.quan_ly_ban_hang.dto.request.AuthenticationRequest;
 import com.study.quan_ly_ban_hang.dto.request.IntrospectRequest;
-import com.study.quan_ly_ban_hang.dto.response.AuthenticationResponse;
 import com.study.quan_ly_ban_hang.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

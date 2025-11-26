@@ -8,6 +8,7 @@ import com.study.quan_ly_ban_hang.enums.Role;
 import com.study.quan_ly_ban_hang.exception.AppException;
 import com.study.quan_ly_ban_hang.exception.ErrorCode;
 import com.study.quan_ly_ban_hang.mapper.UserMapper;
+import com.study.quan_ly_ban_hang.repository.RoleRepository;
 import com.study.quan_ly_ban_hang.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
 
     public UserResponse createUser(UserCreationRequest req) {
         if (userRepository.existsByUsername(req.getUsername())) {
@@ -41,7 +43,7 @@ public class UserService {
         User user = userMapper.toUser(req);
         Set<String> roles = new HashSet<>();
         roles.add(Role.USER.name());
-        user.setRoles(roles);
+//        user.setRoles(roles);
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -53,6 +55,7 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<UserResponse> getUsers() {
 //        Cach 1
 
@@ -75,6 +78,9 @@ public class UserService {
     public UserResponse updateUser(String id, UserUpdateRequest req) {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         userMapper.updateUser(user, req);
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
+        var roles = roleRepository.findAllById(req.getRoles());
+        user.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
