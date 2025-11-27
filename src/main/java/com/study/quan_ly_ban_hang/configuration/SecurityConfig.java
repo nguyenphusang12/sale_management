@@ -1,6 +1,6 @@
 package com.study.quan_ly_ban_hang.configuration;
 
-import com.study.quan_ly_ban_hang.enums.Role;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,32 +11,31 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final CustomJwtDecoder customJwtDecoder;
+
     @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
+    private String signerKey;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        String[] PUBLIC_ENDPOINT = {"/users", "/auth/login", "/auth/introspect"};
+        String[] PUBLIC_ENDPOINT = {"/users", "/auth/login", "/auth/logout", "/auth/introspect"};
         httpSecurity.authorizeHttpRequests(req ->
                 req.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
                         .anyRequest().authenticated()
         );
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer -> jwtConfigurer
-                        .decoder(jwtDecoder())
+                        .decoder(customJwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter())
                 ).authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
@@ -51,15 +50,6 @@ public class SecurityConfig {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
-    }
-
-    @Bean
-    JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(SIGNER_KEY.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
     }
 
     @Bean

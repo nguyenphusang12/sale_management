@@ -7,11 +7,14 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.study.quan_ly_ban_hang.dto.request.AuthenticationRequest;
 import com.study.quan_ly_ban_hang.dto.request.IntrospectRequest;
+import com.study.quan_ly_ban_hang.dto.request.InvalidTokenRequest;
 import com.study.quan_ly_ban_hang.dto.response.AuthenticationResponse;
 import com.study.quan_ly_ban_hang.dto.response.IntrospectResponse;
+import com.study.quan_ly_ban_hang.entity.InvalidToken;
 import com.study.quan_ly_ban_hang.entity.User;
 import com.study.quan_ly_ban_hang.exception.AppException;
 import com.study.quan_ly_ban_hang.exception.ErrorCode;
+import com.study.quan_ly_ban_hang.repository.InvalidTokenRepository;
 import com.study.quan_ly_ban_hang.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -35,6 +39,7 @@ import java.util.StringJoiner;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
     UserRepository userRepository;
+    InvalidTokenRepository invalidTokenRepository;
     PasswordEncoder passwordEncoder;
 
 
@@ -53,17 +58,45 @@ public class AuthenticationService {
     }
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
+        boolean isValid = true;
+        try {
+            verifyToken(request.getToken());
+        } catch (AppException e) {
+            isValid = false;
+        }
+        return IntrospectResponse.builder()
+                .valid(isValid)
+                .build();
+    }
+
+    public void logout(InvalidTokenRequest request) throws ParseException, JOSEException {
+        SignedJWT jwt = verifyToken(request.getToken());
+        String id = jwt.getJWTClaimsSet().getJWTID();
+        Date expiryDate = jwt.getJWTClaimsSet().getExpirationTime();
+
+        InvalidToken invalidToken = InvalidToken.builder()
+                .id(id)
+                .expiryDate(expiryDate)
+                .build();
+        invalidTokenRepository.save(invalidToken);
+    }
+
+    public SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
-        SignedJWT signedJWT = SignedJWT.parse(request.getToken());
+        SignedJWT signedJWT = SignedJWT.parse(token);
 
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
         boolean valid = signedJWT.verify(verifier) && expiryTime.after(new Date());
 
-        return IntrospectResponse.builder()
-                .valid(valid)
-                .build();
+        if (!valid) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (invalidTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        return signedJWT;
     }
 
     private String generateToken(User user) {
@@ -76,6 +109,7 @@ public class AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
 

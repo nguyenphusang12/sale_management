@@ -4,6 +4,7 @@ import com.nimbusds.jose.JOSEException;
 import com.study.quan_ly_ban_hang.dto.request.ApiResponse;
 import com.study.quan_ly_ban_hang.dto.request.AuthenticationRequest;
 import com.study.quan_ly_ban_hang.dto.request.IntrospectRequest;
+import com.study.quan_ly_ban_hang.dto.request.InvalidTokenRequest;
 import com.study.quan_ly_ban_hang.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,12 @@ public class AuthenticationController {
         ApiResponse response = new ApiResponse();
         response.setData(authenticationService.introspect(request));
         return response;
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse logout(@RequestBody InvalidTokenRequest request) throws ParseException, JOSEException {
+        authenticationService.logout(request);
+        return ApiResponse.builder().build();
     }
 
 }
