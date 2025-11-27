@@ -34,7 +34,7 @@ public class CustomJwtDecoder implements JwtDecoder {
     public Jwt decode(String token) throws JwtException {
 
         try {
-            authenticationService.verifyToken(token);
+            authenticationService.verifyToken(token, false);
         } catch (JOSEException | ParseException e) {
             throw new JwtException(e.getMessage());
         }

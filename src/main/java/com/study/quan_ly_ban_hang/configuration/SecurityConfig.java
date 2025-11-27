@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        String[] PUBLIC_ENDPOINT = {"/users", "/auth/login", "/auth/logout", "/auth/introspect"};
+        String[] PUBLIC_ENDPOINT = {"/users", "/auth/login", "/auth/logout", "/auth/introspect", "/auth/refresh"};
         httpSecurity.authorizeHttpRequests(req ->
                 req.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
                         .anyRequest().authenticated()
