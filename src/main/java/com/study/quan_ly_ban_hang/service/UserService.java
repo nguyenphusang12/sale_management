@@ -3,8 +3,9 @@ package com.study.quan_ly_ban_hang.service;
 import com.study.quan_ly_ban_hang.dto.request.UserCreationRequest;
 import com.study.quan_ly_ban_hang.dto.request.UserUpdateRequest;
 import com.study.quan_ly_ban_hang.dto.response.UserResponse;
+import com.study.quan_ly_ban_hang.entity.Role;
 import com.study.quan_ly_ban_hang.entity.User;
-import com.study.quan_ly_ban_hang.enums.Role;
+import com.study.quan_ly_ban_hang.enums.RoleInit;
 import com.study.quan_ly_ban_hang.exception.AppException;
 import com.study.quan_ly_ban_hang.exception.ErrorCode;
 import com.study.quan_ly_ban_hang.mapper.UserMapper;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +41,8 @@ public class UserService {
         }
         req.setPassword(passwordEncoder.encode(req.getPassword()));
         User user = userMapper.toUser(req);
-        Set<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-//        user.setRoles(roles);
+        Role roleUser = roleRepository.findById(RoleInit.USER.getName()).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
+        user.setRoles(Set.of(roleUser));
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
